@@ -11,7 +11,6 @@
 
 #include "Print.hpp"
 #include "Test/run_all_tests.hpp"
-#include <string_view>
 
 inline void CXX_STANDARD_OUTPUT() {
   using Eden::println;

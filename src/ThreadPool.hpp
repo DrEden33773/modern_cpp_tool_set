@@ -37,7 +37,7 @@ private:
             std::unique_lock<std::mutex> lock(queueMutex);
             // wait when `the queue is empty` and `not stopped`
             condition.wait(lock, [&]() { return stop || !tasks.empty(); });
-            if (stop && tasks.empty()) {
+            if (stop && tasks.empty()) [[unlikely]] {
               return;
             }
             task = std::move(tasks.front());
@@ -106,6 +106,53 @@ public:
     for (auto &thread : threads) [[likely]] {
       thread.join();
     }
+  }
+
+  /**
+   * @brief Get the number of threads in the thread pool
+   *
+   * @return std::size_t
+   */
+  [[nodiscard]] std::size_t threads_num() const { return threads.size(); }
+
+  /**
+   * @brief Get the number of unused threads in the thread pool
+   *
+   * @return std::size_t
+   */
+  [[nodiscard]] std::size_t unused_threads_num() const {
+    std::size_t unused = 0;
+    for (auto &thread : threads) [[likely]] {
+      if (thread.joinable()) [[likely]] {
+        ++unused;
+      }
+    }
+    return unused;
+  }
+
+  /**
+   * @brief Get the number of running threads in the thread pool
+   *
+   * @return std::size_t
+   */
+  [[nodiscard]] std::size_t running_threads_num() const {
+    return threads.size() - unused_threads_num();
+  }
+
+  /**
+   * @brief Get the number of remaining tasks in the task queue
+   *
+   * @return std::size_t
+   */
+  [[nodiscard]] std::size_t remaining_tasks_num() const { return tasks.size(); }
+
+  /**
+   * @brief Get the number of running tasks in the task queue
+   *
+   * @return std::size_t
+   */
+  [[nodiscard]] std::size_t running_tasks_num() const {
+    return tasks.size() - remaining_tasks_num();
   }
 
   // copy constructor and copy assignment operator are deleted
