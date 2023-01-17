@@ -12,8 +12,6 @@
 #include "Print.hpp"
 #include "Test/run_all_tests.hpp"
 
-#include <iostream>
-
 inline void CXX_STANDARD_OUTPUT() {
   Eden::println("C++ Standard: {}\n", __cplusplus);
 }
