@@ -25,13 +25,33 @@
 
 namespace Eden {
 
+/**
+ * @brief throw a `std::runtime_error` with message "lost right bracket"
+ *
+ */
+void lost_right_bracket_exception() {
+  throw std::runtime_error{"lost right bracket"};
+}
+
+/**
+ * @brief throw a `std::runtime_error` with message "lost left bracket"
+ *
+ */
+void lost_left_bracket_exception() {
+  throw std::runtime_error{"lost left bracket"};
+}
+
+/**
+ * @brief alias of `std::function<void(std::string &)>`
+ *
+ */
 using to_string_lambda = std::function<void(std::string &)>;
+
+/**
+ * @brief alias of `std::function<void(std::ostringstream &)>`
+ *
+ */
 using oss_obj_lambda = std::function<void(std::ostringstream &)>;
-
-#define TO_STRING_LAMBDA_CAPTURE_REF(target, arg)                              \
-  [&] { (target) += std::to_string(arg); }
-
-#define OSS_OBJ_LAMBDA_CAPTURE_REF(target, arg) [&] { (target) << (arg); }
 
 /**
  * @brief build a vector of `to_string_lambda` from `args`
@@ -151,6 +171,147 @@ std::string basic_format_helper(std::string_view fmt,
 }
 
 /**
+ * @brief helper of `format(fmt, args...)` (only support `{{` `}}`
+ * transcription)
+ *
+ * @tparam Args
+ * @param fmt
+ * @param args_vec
+ * @return std::string
+ */
+template <oss_obj_operative... Args>
+std::string
+advanced_format_helper(std::string_view fmt,
+                       const std::vector<oss_obj_lambda> &args_vec) {
+  std::ostringstream oss{};
+  oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
+  std::size_t default_idx = 0;
+  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) {
+    // if could match `{{` as `{`
+    bool if_left_bracket_transcription =
+        *iter == '{' && std::next(iter) != fmt.end() && *std::next(iter) == '{';
+    // if could match `}}` as `}`
+    bool if_right_bracket_transcription =
+        *iter == '}' && std::next(iter) != fmt.end() && *std::next(iter) == '}';
+    // if could transcription
+    bool if_bracket_transcription =
+        if_left_bracket_transcription || if_right_bracket_transcription;
+    // if it's a single bracket
+    bool if_single_bracket = *iter == '{' || *iter == '}';
+    // if it's not a arg
+    bool if_not_arg = if_bracket_transcription || !if_single_bracket;
+    // cases
+    if (if_not_arg) {
+      // 1.1 => if not transcription
+      oss << *iter;
+      // 1.2 => if transcription
+      if (if_bracket_transcription) {
+        ++iter;
+      }
+    } else {
+      // possible error => missing '{'
+      if (*iter == '}') {
+        lost_left_bracket_exception();
+      }
+      // find `begin_iter` and `end_iter` of the `sign`
+      auto bof_sign = iter;
+      ++bof_sign;
+      auto eof_sign = bof_sign;
+      while (eof_sign != fmt.end() && *eof_sign != '}') {
+        ++eof_sign;
+      }
+      // possible error => missing '}'
+      if (*eof_sign != '}') {
+        lost_right_bracket_exception();
+      }
+      // update `iter` to `end_of_sign`
+      iter = eof_sign;
+      // now, pick the sign
+      std::string_view sign{bof_sign, eof_sign};
+      // two cases
+      if (sign.empty()) { /* 1. {} */
+        args_vec.at(default_idx)(oss);
+        ++default_idx;
+      } else { /* 2. {<integer>} */
+        std::size_t idx = std::stoi(std::string{sign});
+        args_vec.at(idx)(oss);
+      }
+    }
+  }
+  return oss.str();
+}
+
+/**
+ * @brief helper of `format(fmt, args...)` (only support `{{` `}}`
+ * transcription)
+ *
+ * @tparam Args
+ * @param fmt
+ * @param args_vec
+ * @return std::string
+ */
+template <oss_obj_operative... Args>
+std::string
+advanced_format_helper(std::string_view fmt,
+                       const std::vector<to_string_lambda> &args_vec) {
+  std::string result{};
+  std::size_t default_idx = 0;
+  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) {
+    // if could match `{{` as `{`
+    bool if_left_bracket_transcription =
+        *iter == '{' && std::next(iter) != fmt.end() && *std::next(iter) == '{';
+    // if could match `}}` as `}`
+    bool if_right_bracket_transcription =
+        *iter == '}' && std::next(iter) != fmt.end() && *std::next(iter) == '}';
+    // if could transcription
+    bool if_bracket_transcription =
+        if_left_bracket_transcription || if_right_bracket_transcription;
+    // if it's a single bracket
+    bool if_single_bracket = *iter == '{' || *iter == '}';
+    // if it's not a arg
+    bool if_not_arg = if_bracket_transcription || !if_single_bracket;
+    // cases
+    if (if_not_arg) {
+      // 1.1 => if not transcription
+      result += *iter;
+      // 1.2 => if transcription
+      if (if_bracket_transcription) {
+        ++iter;
+      }
+    } else {
+      // possible error => missing '{'
+      if (*iter == '}') {
+        lost_left_bracket_exception();
+      }
+      // find `begin_iter` and `end_iter` of the `sign`
+      auto bof_sign = iter;
+      ++bof_sign;
+      auto eof_sign = bof_sign;
+      while (eof_sign != fmt.end() && *eof_sign != '}') {
+        ++eof_sign;
+      }
+      // possible error => missing '}'
+      if (*eof_sign != '}') {
+        lost_right_bracket_exception();
+      }
+      // update `iter` to `end_of_sign`
+      iter = eof_sign;
+      // now, pick the sign
+      std::string_view sign{bof_sign, eof_sign};
+      // two cases
+      if (sign.empty()) { /* 1. {} */
+        args_vec.at(default_idx)(result);
+        ++default_idx;
+      } else { /* 2. {<integer>} */
+        std::size_t idx = std::stoi(std::string{sign});
+        args_vec.at(idx)(result);
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * @brief return a `std::string` in `fmt` with `args` (args all satisfy
  * `could_to_string` constraint)
  *
@@ -162,7 +323,7 @@ std::string basic_format_helper(std::string_view fmt,
 template <could_to_string... Args>
 std::string format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-  return basic_format_helper(fmt, std::move(args_vec));
+  return advanced_format_helper(fmt, std::move(args_vec));
 }
 
 /**
@@ -177,7 +338,7 @@ std::string format(std::string_view fmt, Args &&...args) {
 template <could_to_string... Args>
 std::string could_to_string_format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-  return basic_format_helper(fmt, std::move(args_vec));
+  return advanced_format_helper(fmt, std::move(args_vec));
 }
 
 /**
@@ -192,7 +353,7 @@ std::string could_to_string_format(std::string_view fmt, Args &&...args) {
 template <oss_obj_operative... Args>
 std::string format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
-  return basic_format_helper(fmt, std::move(args_vec));
+  return advanced_format_helper(fmt, std::move(args_vec));
 }
 
 /**
@@ -207,7 +368,7 @@ std::string format(std::string_view fmt, Args &&...args) {
 template <oss_obj_operative... Args>
 std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
-  return basic_format_helper(fmt, std::move(args_vec));
+  return advanced_format_helper(fmt, std::move(args_vec));
 }
 
 /**

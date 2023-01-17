@@ -70,8 +70,12 @@ void test_print() {
   println("Whether `std::tuple<std::tuple<double, int, float>, Point>` is "
           "`printable` => {}",
           Eden::printable<std::tuple<std::tuple<double, int, float>, Point>>);
-
   println();
+
+  println("{{0}} = {0}, {{1}} = {1}", 1, 2);
+  println(R"("{{0}}" = {}, "{{1}}" = {})", 1, 2);
+  println();
+
   println("`test_Print()` passed!");
   println();
 }
