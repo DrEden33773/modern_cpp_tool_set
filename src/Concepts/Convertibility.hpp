@@ -18,7 +18,7 @@
 namespace Eden {
 
 template <typename T>
-concept oss_obj_bin_operative = requires(T &&t, std::ostringstream &oss) {
+concept oss_obj_operative = requires(T &&t, std::ostringstream &oss) {
   { oss << std::forward<T>(t) };
 };
 
@@ -28,6 +28,6 @@ concept could_to_string = requires(T &&t) {
 };
 
 template <typename T>
-concept string_convertible = oss_obj_bin_operative<T> or could_to_string<T>;
+concept string_convertible = oss_obj_operative<T> or could_to_string<T>;
 
 } // namespace Eden
