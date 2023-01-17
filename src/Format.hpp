@@ -94,7 +94,7 @@ std::string basic_format_helper(std::string_view fmt,
   std::string result{};
   std::size_t default_idx = 0;
   auto iter = fmt.begin();
-  while (iter != fmt.end()) {
+  while (iter != fmt.end()) [[likely]] {
     if (*iter != '{' && *iter != '}') {
       result += *iter;
     } else if (*iter == '{') {
@@ -140,7 +140,7 @@ std::string basic_format_helper(std::string_view fmt,
   oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
   std::size_t default_idx = 0;
   auto iter = fmt.begin();
-  while (iter != fmt.end()) {
+  while (iter != fmt.end()) [[likely]] {
     if (*iter != '{' && *iter != '}') {
       oss << *iter;
     } else if (*iter == '{') {
@@ -186,7 +186,7 @@ advanced_format_helper(std::string_view fmt,
   std::ostringstream oss{};
   oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
   std::size_t default_idx = 0;
-  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) {
+  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) [[likely]] {
     // if could match `{{` as `{`
     bool if_left_bracket_transcription =
         *iter == '{' && std::next(iter) != fmt.end() && *std::next(iter) == '{';
@@ -201,27 +201,27 @@ advanced_format_helper(std::string_view fmt,
     // if it's not a arg
     bool if_not_arg = if_bracket_transcription || !if_single_bracket;
     // cases
-    if (if_not_arg) {
+    if (if_not_arg) [[unlikely]] {
       // 1.1 => if not transcription
       oss << *iter;
       // 1.2 => if transcription
       if (if_bracket_transcription) {
         ++iter;
       }
-    } else {
+    } else [[likely]] {
       // possible error => missing '{'
-      if (*iter == '}') {
+      if (*iter == '}') [[unlikely]] {
         lost_left_bracket_exception();
       }
       // find `begin_iter` and `end_iter` of the `sign`
       auto bof_sign = iter;
       ++bof_sign;
       auto eof_sign = bof_sign;
-      while (eof_sign != fmt.end() && *eof_sign != '}') {
+      while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
         ++eof_sign;
       }
       // possible error => missing '}'
-      if (*eof_sign != '}') {
+      if (*eof_sign != '}') [[unlikely]] {
         lost_right_bracket_exception();
       }
       // update `iter` to `end_of_sign`
@@ -256,7 +256,7 @@ advanced_format_helper(std::string_view fmt,
                        const std::vector<to_string_lambda> &args_vec) {
   std::string result{};
   std::size_t default_idx = 0;
-  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) {
+  for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) [[likely]] {
     // if could match `{{` as `{`
     bool if_left_bracket_transcription =
         *iter == '{' && std::next(iter) != fmt.end() && *std::next(iter) == '{';
@@ -271,27 +271,27 @@ advanced_format_helper(std::string_view fmt,
     // if it's not a arg
     bool if_not_arg = if_bracket_transcription || !if_single_bracket;
     // cases
-    if (if_not_arg) {
+    if (if_not_arg) [[likely]] {
       // 1.1 => if not transcription
       result += *iter;
       // 1.2 => if transcription
-      if (if_bracket_transcription) {
+      if (if_bracket_transcription) [[unlikely]] {
         ++iter;
       }
-    } else {
+    } else [[unlikely]] {
       // possible error => missing '{'
-      if (*iter == '}') {
+      if (*iter == '}') [[unlikely]] {
         lost_left_bracket_exception();
       }
       // find `begin_iter` and `end_iter` of the `sign`
       auto bof_sign = iter;
       ++bof_sign;
       auto eof_sign = bof_sign;
-      while (eof_sign != fmt.end() && *eof_sign != '}') {
+      while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
         ++eof_sign;
       }
       // possible error => missing '}'
-      if (*eof_sign != '}') {
+      if (*eof_sign != '}') [[unlikely]] {
         lost_right_bracket_exception();
       }
       // update `iter` to `end_of_sign`

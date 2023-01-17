@@ -23,9 +23,9 @@ namespace Eden {
 class ThreadPool {
 private:
   void init_threads(std::size_t numThreads) {
-    for (std::size_t i = 0; i < numThreads; ++i) {
+    for (std::size_t i = 0; i < numThreads; ++i) [[likely]] {
       threads.emplace_back([&]() {
-        for (;;) {
+        for (;;) [[likely]] {
           std::function<void()> task;
           // 1. Try to get a task from the queue.
 
@@ -59,7 +59,7 @@ private:
 public:
   /// @brief Construct a new Thread Pool object (with a given number of threads)
   explicit ThreadPool(std::size_t numThreads) {
-    if (numThreads > std::thread::hardware_concurrency()) {
+    if (numThreads > std::thread::hardware_concurrency()) [[unlikely]] {
       std::cout << "Warning: The number of threads is larger than the number "
                    "of hardware concurrency.\n\n";
       std::cout << "Now, automatically set it to the concurrency.\n\n";
@@ -84,7 +84,7 @@ public:
     // (otherwise, the queue could be changed by multiple threads)
     {
       std::unique_lock<std::mutex> lock(queueMutex);
-      if (stop) {
+      if (stop) [[unlikely]] {
         throw std::runtime_error("enqueue on stopped ThreadPool");
       }
       tasks.emplace([=]() { (*wrapper)(); });
@@ -103,7 +103,7 @@ public:
     }
     condition.notify_all(); // notify all threads to stop
     // wait for all threads to stop
-    for (auto &thread : threads) {
+    for (auto &thread : threads) [[likely]] {
       thread.join();
     }
   }
