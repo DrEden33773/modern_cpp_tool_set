@@ -1,5 +1,5 @@
 /**
- * @file ErrLog.hpp
+ * @file Eprint.hpp
  * @author Eden (edwardwang33773@gmail.com)
  * @brief
  * @version 0.1
@@ -23,7 +23,7 @@ namespace Eden {
  * @param args
  */
 template <could_to_string... Args>
-void err_log(std::string_view fmt, Args &&...args) {
+void eprint(std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...);
 }
 
@@ -35,7 +35,7 @@ void err_log(std::string_view fmt, Args &&...args) {
  * @param args
  */
 template <could_to_string... Args>
-void err_log_ln(std::string_view fmt, Args &&...args) {
+void eprintln(std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...) << "\n";
 }
 
