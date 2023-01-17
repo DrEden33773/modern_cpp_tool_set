@@ -11,9 +11,11 @@
 
 #include "Print.hpp"
 #include "Test/run_all_tests.hpp"
+#include <string_view>
 
 inline void CXX_STANDARD_OUTPUT() {
-  Eden::println("C++ Standard: {}\n", __cplusplus);
+  using Eden::println;
+  println("C++ Standard: {}\n", __cplusplus);
 }
 
 int main(int argc, char **argv) {

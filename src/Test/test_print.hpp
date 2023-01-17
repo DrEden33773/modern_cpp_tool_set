@@ -1,5 +1,5 @@
 /**
- * @file test_Print.hpp
+ * @file test_print.hpp
  * @author Eden (edwardwang33773@gmail.com)
  * @brief
  * @version 0.1
@@ -40,7 +40,7 @@ struct Point {
   }
 };
 
-void test_Print() {
+void test_print() {
   using Eden::print;
   using Eden::println;
 
