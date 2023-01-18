@@ -19,6 +19,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string_view>
+#include <type_traits>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -313,21 +314,6 @@ advanced_format_helper(std::string_view fmt,
 
 /**
  * @brief return a `std::string` in `fmt` with `args` (args all satisfy
- * `could_to_string` constraint)
- *
- * @tparam Args
- * @param fmt
- * @param args
- * @return std::string
- */
-template <could_to_string... Args>
-std::string format(std::string_view fmt, Args &&...args) {
-  auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-  return advanced_format_helper(fmt, std::move(args_vec));
-}
-
-/**
- * @brief return a `std::string` in `fmt` with `args` (args all satisfy
  * `could_to_string` constraint) => only used for `Print(fmt, args...)`
  *
  * @tparam Args
@@ -343,21 +329,6 @@ std::string could_to_string_format(std::string_view fmt, Args &&...args) {
 
 /**
  * @brief return a `std::string` in `fmt` with `args` (args all satisfy
- * `oss_obj_operative` constraint)
- *
- * @tparam Args
- * @param fmt
- * @param args
- * @return std::string
- */
-template <oss_obj_operative... Args>
-std::string format(std::string_view fmt, Args &&...args) {
-  auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
-  return advanced_format_helper(fmt, std::move(args_vec));
-}
-
-/**
- * @brief return a `std::string` in `fmt` with `args` (args all satisfy
  * `oss_obj_operative` constraint) => only used for `Print(fmt, args...)`
  *
  * @tparam Args
@@ -367,6 +338,30 @@ std::string format(std::string_view fmt, Args &&...args) {
  */
 template <oss_obj_operative... Args>
 std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
+  auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
+  return advanced_format_helper(fmt, std::move(args_vec));
+}
+
+/**
+ * @brief return a `std::string` in `fmt` with `args` (args all satisfy
+ * `string_convertible` constraint => oss_obj_operative || could_to_string)
+ *
+ * @tparam Args
+ * @param fmt
+ * @param args
+ * @return std::string
+ */
+template <string_convertible... Args>
+std::string format(std::string_view fmt, Args &&...args) {
+  if constexpr (sizeof...(args) == 0) {
+    auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
+    return advanced_format_helper(fmt, std::move(args_vec));
+  }
+  using common_type = std::common_type<Args...>::type;
+  if constexpr (could_to_string<common_type>) {
+    auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
+    return advanced_format_helper(fmt, std::move(args_vec));
+  }
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
   return advanced_format_helper(fmt, std::move(args_vec));
 }
