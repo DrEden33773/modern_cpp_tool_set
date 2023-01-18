@@ -81,97 +81,6 @@ auto build_oss_obj_vec(Args &&...args) -> std::vector<oss_obj_lambda> {
 }
 
 /**
- * @brief helper of `format(fmt, args...)` (doesn't support `{{` `}}`
- * transcription and more format options )
- *
- * @tparam Args
- * @param fmt
- * @param args_vec
- * @return std::string
- */
-template <could_to_string... Args>
-std::string basic_format_helper(std::string_view fmt,
-                                const std::vector<to_string_lambda> &args_vec) {
-  std::string result{};
-  std::size_t default_idx = 0;
-  auto iter = fmt.begin();
-  while (iter != fmt.end()) [[likely]] {
-    if (*iter != '{' && *iter != '}') {
-      result += *iter;
-    } else if (*iter == '{') {
-      // find `begin_iter` and `end_iter` of the `sign`
-      auto beg_of_sign = iter;
-      ++beg_of_sign;
-      auto end_of_sign = beg_of_sign;
-      while (end_of_sign != fmt.end() && *end_of_sign != '}') {
-        ++end_of_sign;
-      }
-      // update `iter` to `end_of_sign`
-      iter = end_of_sign;
-      // now, pick the sign
-      std::string_view sign{beg_of_sign, end_of_sign};
-      // two cases
-      if (sign.empty()) { /* 1. {} */
-        args_vec[default_idx](result);
-        ++default_idx;
-      } else { /* 2. {<integer>} */
-        std::size_t idx = std::stoi(std::string{sign});
-        args_vec[idx](result);
-      }
-    }
-    // update `iter`
-    ++iter;
-  }
-  return result;
-}
-
-/**
- * @brief helper of `format(fmt, args...)` (doesn't support `{{` `}}`
- * transcription and more format options )
- *
- * @tparam Args
- * @param fmt
- * @param args_vec
- * @return std::string
- */
-template <oss_obj_operative... Args>
-std::string basic_format_helper(std::string_view fmt,
-                                const std::vector<oss_obj_lambda> &args_vec) {
-  std::ostringstream oss{};
-  oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
-  std::size_t default_idx = 0;
-  auto iter = fmt.begin();
-  while (iter != fmt.end()) [[likely]] {
-    if (*iter != '{' && *iter != '}') {
-      oss << *iter;
-    } else if (*iter == '{') {
-      // find `begin_iter` and `end_iter` of the `sign`
-      auto beg_of_sign = iter;
-      ++beg_of_sign;
-      auto end_of_sign = beg_of_sign;
-      while (end_of_sign != fmt.end() && *end_of_sign != '}') {
-        ++end_of_sign;
-      }
-      // update `iter` to `end_of_sign`
-      iter = end_of_sign;
-      // now, pick the sign
-      std::string_view sign{beg_of_sign, end_of_sign};
-      // two cases
-      if (sign.empty()) { /* 1. {} */
-        args_vec[default_idx](oss);
-        ++default_idx;
-      } else { /* 2. {<integer>} */
-        std::size_t idx = std::stoi(std::string{sign});
-        args_vec[idx](oss);
-      }
-    }
-    // update `iter`
-    ++iter;
-  }
-  return oss.str();
-}
-
-/**
  * @brief helper of `format(fmt, args...)` (only support `{{` `}}`
  * transcription)
  *
@@ -181,9 +90,8 @@ std::string basic_format_helper(std::string_view fmt,
  * @return std::string
  */
 template <oss_obj_operative... Args>
-std::string
-advanced_format_helper(std::string_view fmt,
-                       const std::vector<oss_obj_lambda> &args_vec) {
+std::string basic_format_helper(std::string_view fmt,
+                                const std::vector<oss_obj_lambda> &args_vec) {
   std::ostringstream oss{};
   oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
   std::size_t default_idx = 0;
@@ -268,9 +176,8 @@ advanced_format_helper(std::string_view fmt,
  * @return std::string
  */
 template <oss_obj_operative... Args>
-std::string
-advanced_format_helper(std::string_view fmt,
-                       const std::vector<to_string_lambda> &args_vec) {
+std::string basic_format_helper(std::string_view fmt,
+                                const std::vector<to_string_lambda> &args_vec) {
   std::string result{};
   std::size_t default_idx = 0;
   for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) [[likely]] {
@@ -356,7 +263,7 @@ advanced_format_helper(std::string_view fmt,
 template <could_to_string... Args>
 std::string could_to_string_format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-  return advanced_format_helper(fmt, std::move(args_vec));
+  return basic_format_helper(fmt, std::move(args_vec));
 }
 
 /**
@@ -371,7 +278,7 @@ std::string could_to_string_format(std::string_view fmt, Args &&...args) {
 template <oss_obj_operative... Args>
 std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
-  return advanced_format_helper(fmt, std::move(args_vec));
+  return basic_format_helper(fmt, std::move(args_vec));
 }
 
 /**
@@ -388,10 +295,10 @@ std::string format(std::string_view fmt, Args &&...args) {
   if constexpr (sizeof...(args) == 0 or
                 could_to_string<typename std::common_type<Args...>::type>) {
     auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-    return advanced_format_helper(fmt, std::move(args_vec));
+    return basic_format_helper(fmt, std::move(args_vec));
   }
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
-  return advanced_format_helper(fmt, std::move(args_vec));
+  return basic_format_helper(fmt, std::move(args_vec));
 }
 
 /**
