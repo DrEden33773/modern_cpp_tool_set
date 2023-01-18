@@ -1,4 +1,5 @@
 add_rules("mode.debug", "mode.release")
+
 target("modern_cpp_tool_set")
     set_kind("binary")
     add_files("src/*.cpp")

@@ -13,6 +13,8 @@
 
 #include "Format.hpp"
 
+#include <format>
+
 namespace Eden {
 
 /**

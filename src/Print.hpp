@@ -16,6 +16,8 @@
 
 #include <algorithm>
 #include <concepts>
+#include <cstdio>
+#include <format>
 #include <functional>
 #include <iostream>
 #include <list>
@@ -38,17 +40,40 @@
 
 namespace Eden {
 
+#if __cpp_lib_format
+
 /**
- * @brief same as `std::make_tuple`
- *
+ * @brief print `fmt_str` with `args...`
+ *        (use std_format_lib, support all features)
  * @tparam Args
+ * @param fmt_str
  * @param args
- * @return std::tuple<Args...>
  */
 template <typename... Args>
-constexpr auto into_tuple(Args &&...args) -> std::tuple<Args...> {
-  return std::make_tuple(std::forward<Args>(args)...);
+void print(const std::string_view fmt_str, Args &&...args) {
+  auto fmt_args{std::make_format_args(args...)};
+  std::string out_str{std::vformat(fmt_str, fmt_args)};
+  fputs(out_str.c_str(), stdout);
 }
+void print() {}
+
+/**
+ * @brief print `fmt_str` with `args...` and add a newline
+ *        (use std_format_lib, support all features)
+ * @tparam Args
+ * @param fmt_str
+ * @param args
+ */
+template <typename... Args>
+void println(const std::string_view fmt_str, Args &&...args) {
+  auto fmt_args{std::make_format_args(args...)};
+  std::string out_str{std::vformat(fmt_str, fmt_args)};
+  fputs(out_str.c_str(), stdout);
+  fputs("\n", stdout);
+}
+void println() { fputs("\n", stdout); }
+
+#else
 
 /**
  * @brief print `fmt` with `args...` (by using `oss_obj_operative_format`)
@@ -76,5 +101,7 @@ void println(std::string_view fmt, Args &&...args) {
   std::cout << "\n";
 }
 void println() { std::cout << "\n"; }
+
+#endif
 
 } // namespace Eden

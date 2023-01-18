@@ -49,13 +49,20 @@ void test_print() {
   println("{}", 1);
   println("{}, {}", 1, 2);
   println("{1}, {0}", 1, 2);
-  println("{1}, {0}, {}", 1, 2);
-  println("{0}, {}, {1}, {}", 1, 2);
-  println("{}", Point{1, 2});
-  println("{}", std::make_tuple(1, 2, 3));
-  println("{}", std::make_pair(1, 2));
-  println("{}", std::make_pair(Point{1, 2}, Point{3, 4}));
   println();
+
+  //---Code below is not supported (conflicting indexing style in format string)
+  //
+  //   println("{1}, {0}, {}", 1, 2);
+  //   println("{0}, {}, {1}, {}", 1, 2);
+
+  //---Code below doesn't satisfy `formattable_with` constrain in std_format_lib
+  //
+  //   println("{}", Point{1, 2});
+  //   println("{}", std::make_tuple(1, 2, 3));
+  //   println("{}", std::make_pair(1, 2));
+  //   println("{}", std::make_pair(Point{1, 2}, Point{3, 4}));
+  //   println();
 
   println("Whether `std::tuple<int, double>` is `printable` => {}",
           Eden::printable<std::tuple<int, double>>);

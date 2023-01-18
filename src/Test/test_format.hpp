@@ -9,6 +9,12 @@
  *
  */
 
+/**
+ * @attention This file is @b DISCARDED due to `std_format_library` was found
+ * So of course, the `eden_format_library` will be deprecated
+ *
+ */
+
 #pragma once
 
 #include "../AdvancedPair.hpp"
@@ -28,14 +34,14 @@ void test_format() {
   using Eden::format;
   using Eden::println;
 
-  std::string tuple_str = format("{}", std::make_tuple(1, 2));
-  std::string pair_str = format("{}", std::make_pair(1, 2));
+  std::string tuple_str = Eden::format("{}", std::make_tuple(1, 2));
+  std::string pair_str = Eden::format("{}", std::make_pair(1, 2));
 
   println("tuple => {}", std::make_tuple(1, 2));
   println(" pair => {}", std::make_pair(1, 2));
   println();
-  println("format(tuple) => {}", tuple_str);
-  println(" format(pair) => {}", pair_str);
+  println("Eden::format(tuple) => {}", tuple_str);
+  println(" Eden::format(pair) => {}", pair_str);
   println();
 
   assert(tuple_str == pair_str);

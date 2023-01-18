@@ -24,8 +24,8 @@ void test_tuple_utility() {
   auto tuple_b = std::make_tuple(5, 4, 3, 2, 1);
   std::cout << tuple_a << " along with " << tuple_b;
   std::cout << "\n";
-  Eden::println_tuple(tuple_a);
-  Eden::println_tuple(tuple_b);
+  // Eden::println_tuple(tuple_a);
+  // Eden::println_tuple(tuple_b);
   std::cout << "\n";
 }
 

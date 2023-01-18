@@ -12,7 +12,6 @@
 #pragma once
 
 #include "test_backslash.hpp"
-#include "test_format.hpp"
 #include "test_print.hpp"
 #include "test_tuple_utility.hpp"
 
@@ -25,7 +24,6 @@ static const std::vector<std::function<void()>> tests = {
     // Test::test_tuple_utility,
     Test::test_print,
     // Test::test_backslash,
-    Test::test_format,
 };
 
 void run_all_tests() {

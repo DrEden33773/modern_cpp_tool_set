@@ -9,7 +9,6 @@
  *
  */
 
-#include "Print.hpp"
 #include "Test/run_all_tests.hpp"
 
 inline void CXX_STANDARD_OUTPUT() {
