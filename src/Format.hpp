@@ -218,8 +218,24 @@ advanced_format_helper(std::string_view fmt,
       auto bof_sign = iter;
       ++bof_sign;
       auto eof_sign = bof_sign;
-      while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
-        ++eof_sign;
+      /**
+       * @code
+          while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
+            ++eof_sign;
+          }
+       *
+       */
+      while (eof_sign != fmt.end()) [[likely]] {
+        if (*eof_sign == '}') [[unlikely]] {
+          if (std::next(eof_sign) != fmt.end() && *std::next(eof_sign) == '}')
+              [[unlikely]] {
+            ++eof_sign;
+          } else [[likely]] {
+            break;
+          }
+        } else [[likely]] {
+          ++eof_sign;
+        }
       }
       // possible error => missing '}'
       if (*eof_sign != '}') [[unlikely]] {
@@ -288,8 +304,24 @@ advanced_format_helper(std::string_view fmt,
       auto bof_sign = iter;
       ++bof_sign;
       auto eof_sign = bof_sign;
-      while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
-        ++eof_sign;
+      /**
+       * @code
+          while (eof_sign != fmt.end() && *eof_sign != '}') [[likely]] {
+            ++eof_sign;
+          }
+       *
+       */
+      while (eof_sign != fmt.end()) [[likely]] {
+        if (*eof_sign == '}') [[unlikely]] {
+          if (std::next(eof_sign) != fmt.end() && *std::next(eof_sign) == '}')
+              [[unlikely]] {
+            ++eof_sign;
+          } else [[likely]] {
+            break;
+          }
+        } else [[likely]] {
+          ++eof_sign;
+        }
       }
       // possible error => missing '}'
       if (*eof_sign != '}') [[unlikely]] {
@@ -353,12 +385,8 @@ std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
  */
 template <string_convertible... Args>
 std::string format(std::string_view fmt, Args &&...args) {
-  if constexpr (sizeof...(args) == 0) {
-    auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
-    return advanced_format_helper(fmt, std::move(args_vec));
-  }
-  using common_type = std::common_type<Args...>::type;
-  if constexpr (could_to_string<common_type>) {
+  if constexpr (sizeof...(args) == 0 or
+                could_to_string<typename std::common_type<Args...>::type>) {
     auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
     return advanced_format_helper(fmt, std::move(args_vec));
   }
