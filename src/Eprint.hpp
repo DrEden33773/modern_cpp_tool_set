@@ -17,6 +17,7 @@
 #include <format>
 
 namespace Eden {
+
 #if __cpp_lib_format
 
 /**

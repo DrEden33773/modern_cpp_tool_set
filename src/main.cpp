@@ -11,6 +11,8 @@
 
 #include "Test/run_all_tests.hpp"
 
+#include <sstream>
+
 inline void CXX_STANDARD_OUTPUT() {
   using Eden::println;
   println("C++ Standard: {}\n", __cplusplus);
@@ -19,5 +21,6 @@ inline void CXX_STANDARD_OUTPUT() {
 int main(int argc, char **argv) {
   CXX_STANDARD_OUTPUT();
   Test::run_all_tests();
+
   return 0;
 }

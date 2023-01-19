@@ -40,9 +40,8 @@ template <typename Type, typename... Types>
 constexpr auto head(const std::tuple<Type, Types...> &tuple) {
   return std::get<0>(tuple);
 }
-template <typename Type> constexpr void head(const std::tuple<> &tuple) {
+void head(const std::tuple<> &tuple) {
   const char *error_info = "Tuple is empty! Can't get its head elem!";
-  std::cerr << error_info << std::endl;
   throw std::logic_error(error_info);
 }
 
@@ -62,9 +61,8 @@ template <typename Type, typename... Types>
 constexpr auto tail(const std::tuple<Type, Types...> &tuple) {
   return get_tail(std::make_index_sequence<sizeof...(Types)>(), tuple);
 }
-template <typename Type> constexpr void tail(const std::tuple<> &tuple) {
+void tail(const std::tuple<> &tuple) {
   const char *error_info = "Tuple is empty! Can't get its tail tuple!";
-  std::cerr << error_info << std::endl;
   throw std::logic_error(error_info);
 }
 
@@ -75,17 +73,15 @@ template <typename Type, typename... Types>
 constexpr auto last(const std::tuple<Type, Types...> &tuple) {
   return std::get<sizeof...(Types)>(tuple);
 }
-template <typename Type> constexpr void last(std::tuple<> tuple) {
+void last(std::tuple<> tuple) {
   const char *error_info = "Tuple is empty! Can't get its last elem!";
-  std::cerr << error_info << std::endl;
   throw std::logic_error(error_info);
 }
 
-/// @brief @b init_without_tail
+/// @brief @b remove_last
 /// @e (11,2,3,4)__init=(11,2,3)
 /// @e (11)__init=()
 /// @e ()__init->error
-
 template <size_t... Index, typename... Types>
 constexpr auto remove_last(std::index_sequence<Index...>,
                            const std::tuple<Types...> &tuple) {
@@ -95,10 +91,8 @@ template <typename Type, typename... Types>
 constexpr auto init(const std::tuple<Type, Types...> &tuple) {
   return remove_last(std::make_index_sequence<sizeof...(Types)>(), tuple);
 }
-template <typename Type> constexpr void init(const std::tuple<> &tuple) {
-  const char *error_info =
-      "Tuple is empty! Can't use `init` to remove its last elem!";
-  std::cerr << error_info << std::endl;
+void init(const std::tuple<> &tuple) {
+  const char *error_info = "Tuple is empty! Can't remove its last elem!";
   throw std::logic_error(error_info);
 }
 

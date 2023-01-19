@@ -3,7 +3,7 @@ add_rules("mode.debug", "mode.release")
 target("modern_cpp_tool_set")
     set_kind("binary")
     add_files("src/*.cpp")
-    set_languages("c17", "c++20")
+    set_languages("c17", "gnu++23")
     add_includedirs("/usr/local/include")
 
 --

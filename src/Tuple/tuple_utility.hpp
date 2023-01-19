@@ -2,11 +2,13 @@
 
 #include "../Concepts.hpp"
 
+#include <any>
 #include <functional>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 
 namespace Eden {
@@ -39,7 +41,37 @@ constexpr auto for_each(const std::tuple<Args...> &tuple, Func f) {
 
 /// @brief @b print_tuple
 template <printable... Args>
-void print_tuple(const std::tuple<Args...> &tuple) {
+constexpr void print_tuple(const std::tuple<Args...> &tuple) {
+  /**
+   *  @brief take `tuple := (1, 2, 3, 4, 5)`
+        alone with
+      @code
+        func := f <-> [](const auto &element, std::size_t current_index) {
+          if (current_index != 0) {
+            std::cout << ", ";
+          }
+          std::cout << element;
+        }
+      @code
+      for example:
+      @code
+        called `for_each`:
+          -> unwrap_tuple<f, tuple, 5>::get_forward()
+            -> unwrap_tuple<f, tuple, 4>::get_forward()
+              -> unwrap_tuple<f, tuple, 3>::get_forward()
+                -> unwrap_tuple<f, tuple, 2>::get_forward()
+                  -> unwrap_tuple<f, tuple, 1>::get_forward()
+                  <- f(element = tuple[0], current_index = 0) => `1`
+                <- f(element = tuple[1], current_index = 1) => `, 2`
+              <- f(element = tuple[2], current_index = 2) => `, 3`
+            <- f(element = tuple[3], current_index = 3) => `, 4`
+          <- f(element = tuple[4], current_index = 4) => `, 5`
+        end of `for_each`
+      @code
+      Finally, it appears like you've outputted `(1, 2, 3, 4, 5)`.
+      But, it could be separated into `{1} $ {, 2} $ {, 3} $ {, 4} $ {, 5}`
+   *
+   */
   std::cout << "(";
   for_each(tuple, [](const auto &element, std::size_t current_index) {
     if (current_index != 0) {
@@ -52,7 +84,7 @@ void print_tuple(const std::tuple<Args...> &tuple) {
 
 /// @brief @b println_tuple
 template <printable... Args>
-void println_tuple(const std::tuple<Args...> &tuple) {
+constexpr void println_tuple(const std::tuple<Args...> &tuple) {
   print_tuple(tuple);
   std::cout << std::endl;
 }
@@ -63,12 +95,28 @@ void println_tuple(const std::tuple<Args...> &tuple) {
  * @tparam T
  * @tparam U
  * @param t
- * @return decltype(std::make_pair(std::get<0>(t), std::get<1>(t)))
+ * @return std::pair<T, U>
  */
 template <typename T, typename U>
-auto tuple_to_pair(const std::tuple<T, U> &t)
-    -> decltype(std::make_pair(std::get<0>(t), std::get<1>(t))) {
+constexpr auto tuple_to_pair(const std::tuple<T, U> &t) -> std::pair<T, U> {
   return std::make_pair(std::get<0>(t), std::get<1>(t));
+}
+
+/**
+ * @brief into dyn vec
+ *
+ * @tparam Args
+ * @param tuple
+ * @return constexpr auto
+ */
+template <typename... Args>
+constexpr auto into_dyn_vec(const std::tuple<Args...> &tuple)
+    -> std::vector<std::any> {
+  auto vec =
+      [&]<std::size_t... Idx, typename... Ts>(std::index_sequence<Idx...>) {
+        return std::vector<std::any>{std::get<Idx>(tuple)...};
+      }(std::make_index_sequence<sizeof...(Args)>());
+  return vec;
 }
 
 } // namespace Eden
@@ -100,7 +148,8 @@ namespace std {
  * @return std::ostream&
  */
 template <Eden::printable... Args>
-std::ostream &operator<<(std::ostream &out, const std::tuple<Args...> &tuple) {
+constexpr std::ostream &operator<<(std::ostream &out,
+                                   const std::tuple<Args...> &tuple) {
   out << "(";
   Eden::for_each(tuple, [&](const auto &element, size_t current_index) {
     if (current_index != 0) {
@@ -120,18 +169,23 @@ std::ostream &operator<<(std::ostream &out, const std::tuple<Args...> &tuple) {
  * @return std::string
  */
 template <Eden::string_convertible... Args>
-std::string to_string(const std::tuple<Args...> &tuple) {
-  // std::ostringstream oss;
-  // oss << tuple;
-  // return oss.str();
-
+constexpr std::string to_string(const std::tuple<Args...> &tuple) {
   std::string res;
   res += "(";
   Eden::for_each(tuple, [&](const auto &element, size_t current_index) {
     if (current_index != 0) {
       res += ", ";
     }
-    res += std::to_string(element);
+    if constexpr (Eden::could_to_string<
+                      typename std::common_type<Args...>::type>) {
+      res += std::to_string(element);
+    } else {
+      res += [&]() {
+        std::ostringstream oss;
+        oss << element;
+        return oss.str();
+      }();
+    }
   });
   res += ")";
   return res;

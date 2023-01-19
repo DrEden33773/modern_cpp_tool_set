@@ -45,15 +45,27 @@ std::ostream &operator<<(std::ostream &os, const std::pair<T, U> &p) {
  */
 template <Eden::string_convertible T, Eden::string_convertible U>
 std::string to_string(const std::pair<T, U> &pair) {
-  // std::ostringstream oss;
-  // oss << pair;
-  // return oss.str();
-
   std::string res;
   res += '(';
-  res += std::to_string(pair.first);
+  if constexpr (Eden::could_to_string<T>) {
+    res += std::to_string(pair.first);
+  } else {
+    res += [&] {
+      std::ostringstream oss;
+      oss << pair.first;
+      return oss.str();
+    }();
+  }
   res += ", ";
-  res += std::to_string(pair.second);
+  if constexpr (Eden::could_to_string<U>) {
+    res += std::to_string(pair.second);
+  } else {
+    res += [&] {
+      std::ostringstream oss;
+      oss << pair.second;
+      return oss.str();
+    }();
+  }
   res += ')';
   return res;
 }
@@ -71,8 +83,7 @@ namespace Eden {
  * @return decltype(std::make_tuple(p.first, p.second))
  */
 template <typename T, typename U>
-auto pair_to_tuple(const std::pair<T, U> &p)
-    -> decltype(std::make_tuple(p.first, p.second)) {
+auto pair_to_tuple(const std::pair<T, U> &p) -> std::tuple<T, U> {
   return std::make_tuple(p.first, p.second);
 }
 
