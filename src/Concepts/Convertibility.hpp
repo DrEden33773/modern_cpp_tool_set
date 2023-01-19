@@ -28,6 +28,7 @@ concept could_to_string = requires(T &&t) {
 };
 
 template <typename T>
-concept string_convertible = oss_obj_operative<T> or could_to_string<T>;
+concept string_convertible = oss_obj_operative<T> or could_to_string<T> or
+                             std::convertible_to<T, std::string>;
 
 } // namespace Eden

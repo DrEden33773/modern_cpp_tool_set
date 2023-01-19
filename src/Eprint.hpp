@@ -13,9 +13,42 @@
 
 #include "Format.hpp"
 
+#include <cstdio>
 #include <format>
 
 namespace Eden {
+#if __cpp_lib_format
+
+/**
+ * @brief print error message to `stderr`
+ *
+ * @tparam Args
+ * @param fmt_str
+ * @param args
+ */
+template <string_convertible... Args>
+void eprint(const std::string_view fmt_str, Args &&...args) {
+  auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
+  std::string out_str{std::vformat(fmt_str, fmt_args)};
+  fputs(out_str.c_str(), stderr);
+}
+
+/**
+ * @brief print error message to `stderr` with a newline
+ *
+ * @tparam Args
+ * @param fmt_str
+ * @param args
+ */
+template <string_convertible... Args>
+void eprintln(const std::string_view fmt_str, Args &&...args) {
+  auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
+  std::string out_str{std::vformat(fmt_str, fmt_args)};
+  fputs(out_str.c_str(), stderr);
+  fputs("\n", stderr);
+}
+
+#else
 
 /**
  * @brief print error message to `std::cerr`
@@ -25,7 +58,7 @@ namespace Eden {
  * @param args
  */
 template <could_to_string... Args>
-void eprint(std::string_view fmt, Args &&...args) {
+void eprint(const std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...);
 }
 
@@ -37,8 +70,10 @@ void eprint(std::string_view fmt, Args &&...args) {
  * @param args
  */
 template <could_to_string... Args>
-void eprintln(std::string_view fmt, Args &&...args) {
+void eprintln(const std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...) << "\n";
 }
+
+#endif
 
 } // namespace Eden

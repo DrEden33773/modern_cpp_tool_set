@@ -96,7 +96,7 @@ auto build_oss_obj_vec(Args &&...args) -> std::vector<oss_obj_lambda> {
  * @return std::string
  */
 template <oss_obj_operative... Args>
-std::string basic_format_helper(std::string_view fmt,
+std::string basic_format_helper(const std::string_view fmt,
                                 const std::vector<oss_obj_lambda> &args_vec) {
   std::ostringstream oss{};
   oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
@@ -182,7 +182,7 @@ std::string basic_format_helper(std::string_view fmt,
  * @return std::string
  */
 template <oss_obj_operative... Args>
-std::string basic_format_helper(std::string_view fmt,
+std::string basic_format_helper(const std::string_view fmt,
                                 const std::vector<to_string_lambda> &args_vec) {
   std::string result{};
   std::size_t default_idx = 0;
@@ -267,7 +267,7 @@ std::string basic_format_helper(std::string_view fmt,
  * @return std::string
  */
 template <could_to_string... Args>
-std::string could_to_string_format(std::string_view fmt, Args &&...args) {
+std::string could_to_string_format(const std::string_view fmt, Args &&...args) {
   auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
   return basic_format_helper(fmt, std::move(args_vec));
 }
@@ -282,7 +282,8 @@ std::string could_to_string_format(std::string_view fmt, Args &&...args) {
  * @return std::string
  */
 template <oss_obj_operative... Args>
-std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
+std::string oss_obj_operative_format(const std::string_view fmt,
+                                     Args &&...args) {
   auto args_vec = build_oss_obj_vec(std::forward<Args>(args)...);
   return basic_format_helper(fmt, std::move(args_vec));
 }
@@ -297,7 +298,7 @@ std::string oss_obj_operative_format(std::string_view fmt, Args &&...args) {
  * @return std::string
  */
 template <string_convertible... Args>
-std::string format(std::string_view fmt, Args &&...args) {
+std::string format(const std::string_view fmt, Args &&...args) {
   if constexpr (sizeof...(args) == 0 or
                 could_to_string<typename std::common_type<Args...>::type>) {
     auto args_vec = build_to_string_vec(std::forward<Args>(args)...);
