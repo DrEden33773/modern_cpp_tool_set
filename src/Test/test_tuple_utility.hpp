@@ -22,38 +22,38 @@
 namespace Test {
 
 void test_tuple_utility() {
-  auto tuple_a = std::make_tuple(1, 2, 3, 4, 5);
-  auto tuple_b = std::make_tuple(5, 4, 3, 2, 1);
-  Eden::println_tuple(tuple_a);
-  Eden::println_tuple(tuple_b);
-  std::cout << tuple_a << "'s head => " << Eden::head(tuple_a) << "\n";
-  std::cout << tuple_a << "'s tail => " << Eden::tail(tuple_a) << "\n";
-  std::cout << tuple_a << "'s init => " << Eden::init(tuple_a) << "\n";
-  std::cout << tuple_a << "'s last => " << Eden::last(tuple_a) << "\n";
+  using std::make_tuple;
+
+  auto a = make_tuple(1, 2, 3, 4, 5);
+  auto b = make_tuple(5, 4, 3, 2, 1);
+  Eden::println_tuple(a);
+  Eden::println_tuple(b);
+  std::cout << a << "'s head => " << Eden::head(a) << "\n";
+  std::cout << a << "'s tail => " << Eden::tail(a) << "\n";
+  std::cout << a << "'s init => " << Eden::init(a) << "\n";
+  std::cout << a << "'s last => " << Eden::last(a) << "\n";
   std::cout << "\n";
 
-  auto tuple_c = std::make_tuple(11);
-  std::cout << tuple_c << "'s head => " << Eden::head(tuple_c) << "\n";
-  std::cout << tuple_c << "'s tail => " << Eden::tail(tuple_c) << "\n";
-  std::cout << tuple_c << "'s init => " << Eden::init(tuple_c) << "\n";
-  std::cout << tuple_c << "'s last => " << Eden::last(tuple_c) << "\n";
+  auto c = make_tuple(11);
+  std::cout << c << "'s head => " << Eden::head(c) << "\n";
+  std::cout << c << "'s tail => " << Eden::tail(c) << "\n";
+  std::cout << c << "'s init => " << Eden::init(c) << "\n";
+  std::cout << c << "'s last => " << Eden::last(c) << "\n";
   std::cout << "\n";
 
-  auto complex =
-      std::make_tuple(11, "32", std::make_tuple(3, std::make_tuple(), 9),
-                      std::make_tuple(), 'a');
+  auto complex = make_tuple(11, "32", make_tuple(3, make_tuple(), 9), 'a');
   std::cout << complex << "'s head => " << Eden::head(complex) << "\n";
   std::cout << complex << "'s tail => " << Eden::tail(complex) << "\n";
   std::cout << complex << "'s init => " << Eden::init(complex) << "\n";
   std::cout << complex << "'s last => " << Eden::last(complex) << "\n";
   std::cout << "\n";
 
-  auto tuple_empty = std::make_tuple();
+  auto empty = std::make_tuple();
   try {
-    Eden::head(tuple_empty);
-    Eden::tail(tuple_empty);
-    Eden::init(tuple_empty);
-    Eden::last(tuple_empty);
+    Eden::head(empty);
+    Eden::tail(empty);
+    Eden::init(empty);
+    Eden::last(empty);
   } catch (const std::exception &e) {
     Eden::eprintln("Err --> {}", e.what());
   }
