@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "fib_seq.hpp"
 #include "test_backslash.hpp"
 #include "test_eprint.hpp"
 #include "test_print.hpp"
@@ -26,6 +27,7 @@ static const std::vector<std::function<void()>> tests = {
     // Test::test_backslash,
     Test::test_eprint,
     Test::test_tuple_utility,
+    Test::fib_seq_test,
 };
 
 static void IKU_IKU_IKU_AH() {
