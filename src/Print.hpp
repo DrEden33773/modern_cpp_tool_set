@@ -49,7 +49,7 @@ namespace Eden {
  * @param fmt_str
  * @param args
  */
-template <string_convertible... Args>
+template <typename... Args>
 void print(const std::string_view fmt_str, Args &&...args) {
   auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
   std::string out_str{std::vformat(fmt_str, fmt_args)};
@@ -64,7 +64,7 @@ void print() {}
  * @param fmt_str
  * @param args
  */
-template <string_convertible... Args>
+template <typename... Args>
 void println(const std::string_view fmt_str, Args &&...args) {
   auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
   std::string out_str{std::vformat(fmt_str, fmt_args)};
@@ -82,7 +82,7 @@ void println() { fputs("\n", stdout); }
  * @param fmt
  * @param args
  */
-template <printable... Args>
+template <typename... Args>
 void print(const std::string_view fmt, Args &&...args) {
   std::cout << oss_obj_operative_format(fmt, std::forward<Args>(args)...);
 }
@@ -96,7 +96,7 @@ void print() {}
  * @param fmt
  * @param args
  */
-template <printable... Args>
+template <typename... Args>
 void println(const std::string_view fmt, Args &&...args) {
   std::cout << oss_obj_operative_format(fmt, std::forward<Args>(args)...);
   std::cout << "\n";

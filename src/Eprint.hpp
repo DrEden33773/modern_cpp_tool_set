@@ -27,7 +27,7 @@ namespace Eden {
  * @param fmt_str
  * @param args
  */
-template <string_convertible... Args>
+template <typename... Args>
 void eprint(const std::string_view fmt_str, Args &&...args) {
   auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
   std::string out_str{std::vformat(fmt_str, fmt_args)};
@@ -41,7 +41,7 @@ void eprint(const std::string_view fmt_str, Args &&...args) {
  * @param fmt_str
  * @param args
  */
-template <string_convertible... Args>
+template <typename... Args>
 void eprintln(const std::string_view fmt_str, Args &&...args) {
   auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
   std::string out_str{std::vformat(fmt_str, fmt_args)};
@@ -58,7 +58,7 @@ void eprintln(const std::string_view fmt_str, Args &&...args) {
  * @param fmt
  * @param args
  */
-template <could_to_string... Args>
+template <typename... Args>
 void eprint(const std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...);
 }
@@ -70,7 +70,7 @@ void eprint(const std::string_view fmt, Args &&...args) {
  * @param fmt
  * @param args
  */
-template <could_to_string... Args>
+template <typename... Args>
 void eprintln(const std::string_view fmt, Args &&...args) {
   std::cerr << format(fmt, std::forward<Args>(args)...) << "\n";
 }
