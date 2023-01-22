@@ -73,7 +73,7 @@ template <typename Type, typename... Types>
 constexpr auto last(const std::tuple<Type, Types...> &tuple) {
   return std::get<sizeof...(Types)>(tuple);
 }
-void last(std::tuple<> tuple) {
+void last(const std::tuple<> &tuple) {
   const char *error_info = "Tuple is empty! Can't get its last elem!";
   throw std::logic_error(error_info);
 }
