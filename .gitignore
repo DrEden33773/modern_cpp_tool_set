@@ -6,4 +6,4 @@ build/
 .DS_Store
 
 # clangd Cache
-.vscode/.cache
+.vscode/.cache/
