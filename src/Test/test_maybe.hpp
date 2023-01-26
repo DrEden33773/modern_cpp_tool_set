@@ -40,13 +40,13 @@ void test_maybe() {
     std::reverse(vec.begin(), vec.end());
     return vec;
   };
-  auto accumulate = [](vector<int> vec) {
+  const auto accumulate = [](vector<int> vec) {
     int sum = 0;
     std::for_each(vec.begin(), vec.end(),
                   [&sum](int num) mutable { sum += num; });
     return sum;
   };
-  auto int_to_string = [](int num) { return std::to_string(num); };
+  const auto int_to_string = [](int num) { return std::to_string(num); };
 
   static constexpr initializer_list<int> initializer = {15, 6,  1, 0,
                                                         32, 17, 24};

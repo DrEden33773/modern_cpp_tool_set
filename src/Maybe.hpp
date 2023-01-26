@@ -44,18 +44,18 @@ class Maybe {
   explicit Maybe(const T &&init) : value{init} {}
   explicit Maybe(T &&init) : value{init} {}
 
-  // static Maybe<T> from_optional(std::optional<T> &optional) {
-  //   Maybe<T> ret;
-  //   ret.value = optional;
-  //   return ret;
-  // }
-  // static Maybe<T> from_optional(const std::optional<T> &optional) {
-  //   Maybe<T> ret;
-  //   ret.value = optional;
-  //   return ret;
-  // }
+  static Maybe<T> from_optional(std::optional<T> &optional) {
+    Maybe<T> ret;
+    ret.value = optional;
+    return ret;
+  }
+  static Maybe<T> from_optional(const std::optional<T> &optional) {
+    Maybe<T> ret;
+    ret.value = optional;
+    return ret;
+  }
 
-  static Maybe<T> null_maybe() { return Maybe<T>(); }
+  static Maybe<T> null() { return Maybe<T>(); }
 
   T extract() {
     if (value == std::nullopt) {
@@ -70,7 +70,15 @@ class Maybe {
       -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
     using type = decltype(func(T()));
     if (value == std::nullopt) {
-      return Maybe<type>::null_maybe();
+      return Maybe<type>::null();
+    }
+    return Maybe<type>(func(std::move(value).value()));
+  }
+  auto exec(const functor_of<T> auto &&func)
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
+    if (value == std::nullopt) {
+      return Maybe<type>::null();
     }
     return Maybe<type>(func(std::move(value).value()));
   }
@@ -80,7 +88,7 @@ class Maybe {
     using type = decltype(func(T()));
     auto &&value = std::move(maybe).get_raw();
     if (value == std::nullopt) {
-      return Maybe<type>::null_maybe();
+      return Maybe<type>::null();
     }
     return Maybe<type>(func(value.value()));
   }
@@ -89,35 +97,73 @@ class Maybe {
     using type = decltype(func(T()));
     auto &&value = std::move(maybe).get_raw();
     if (value == std::nullopt) {
-      return Maybe<type>::null_maybe();
+      return Maybe<type>::null();
+    }
+    return Maybe<type>(func(value.value()));
+  }
+  friend auto operator|(Maybe<T> &&maybe, const functor_of<T> auto &&func)
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
+    auto &&value = std::move(maybe).get_raw();
+    if (value == std::nullopt) {
+      return Maybe<type>::null();
+    }
+    return Maybe<type>(func(value.value()));
+  }
+  friend auto operator|(Maybe<T> &maybe, const functor_of<T> auto &&func)
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
+    auto &&value = std::move(maybe).get_raw();
+    if (value == std::nullopt) {
+      return Maybe<type>::null();
     }
     return Maybe<type>(func(value.value()));
   }
 };
 
 template <typename T>
-auto maybe_exec(Maybe<T> &&maybe, functor_of<T> auto &&func)
+auto exec_maybe(Maybe<T> &&maybe, functor_of<T> auto &&func)
     -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
   using type = decltype(func(T()));
   auto &&value = std::move(maybe).get_raw();
   if (value == std::nullopt) {
-    return Maybe<type>::null_maybe();
+    return Maybe<type>::null();
   }
   return Maybe<type>(func(value.value()));
 }
 template <typename T>
-auto maybe_exec(Maybe<T> &maybe, functor_of<T> auto &&func)
+auto exec_maybe(Maybe<T> &maybe, functor_of<T> auto &&func)
     -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
   using type = decltype(func(T()));
   auto &&value = std::move(maybe).get_raw();
   if (value == std::nullopt) {
-    return Maybe<type>::null_maybe();
+    return Maybe<type>::null();
+  }
+  return Maybe<type>(func(value.value()));
+}
+template <typename T>
+auto exec_maybe(Maybe<T> &&maybe, const functor_of<T> auto &&func)
+    -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+  using type = decltype(func(T()));
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    return Maybe<type>::null();
+  }
+  return Maybe<type>(func(value.value()));
+}
+template <typename T>
+auto exec_maybe(Maybe<T> &maybe, const functor_of<T> auto &&func)
+    -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+  using type = decltype(func(T()));
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    return Maybe<type>::null();
   }
   return Maybe<type>(func(value.value()));
 }
 
 template <typename T>
-T maybe_extract(Maybe<T> &&maybe) {
+T extract_maybe(Maybe<T> &&maybe) {
   auto &&value = std::move(maybe).get_raw();
   if (value == std::nullopt) {
     throw std::runtime_error("Cannot extract the value.");
@@ -125,7 +171,7 @@ T maybe_extract(Maybe<T> &&maybe) {
   return value.value();
 }
 template <typename T>
-T maybe_extract(Maybe<T> &maybe) {
+T extract_maybe(Maybe<T> &maybe) {
   auto &&value = std::move(maybe).get_raw();
   if (value == std::nullopt) {
     throw std::runtime_error("Cannot extract the value.");
