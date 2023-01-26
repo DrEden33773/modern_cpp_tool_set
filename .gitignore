@@ -5,4 +5,5 @@ build/
 # MacOS Cache
 .DS_Store
 
-
+# clangd Cache
+.vscode/.cache
