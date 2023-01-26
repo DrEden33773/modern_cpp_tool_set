@@ -66,8 +66,8 @@ class Maybe {
   std::optional<T> get_optional() { return value; }
 
   auto exec(functor_of<T> auto func)
-      -> decltype(Maybe<decltype(func(T{}))>(func(T{}))) {
-    using type = decltype(func(T{}));
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
     if (value == std::nullopt) {
       return Maybe<type>::from_optional(std::optional<type>{std::nullopt});
     }
