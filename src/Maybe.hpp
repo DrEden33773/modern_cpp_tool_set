@@ -21,7 +21,7 @@ namespace Eden {
  * @brief
  *       Concept `functor_of` requires an type param `value_t`.
  *       It needs to satisfy =>
- *              0. func := functor(), value := value_t()
+ *              0. `func` := `functor()`, `value` := `value_t()`
  *              1. form of `func(value)`
  *              2. return type of `func(value)` is not `void`
  * @tparam functor
@@ -36,10 +36,9 @@ concept functor_of = requires(functor func, value_t value) {
 template <typename T>
 class Maybe {
   std::optional<T> value{};
-
- public:
   Maybe() = default;
 
+ public:
   explicit Maybe(T &init) : value{init} {}
   explicit Maybe(const T &init) : value{init} {}
   explicit Maybe(const T &&init) : value{init} {}
