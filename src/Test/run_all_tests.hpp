@@ -17,6 +17,7 @@
 #include "fib_seq.hpp"
 #include "test_backslash.hpp"
 #include "test_eprint.hpp"
+#include "test_maybe.hpp"
 #include "test_print.hpp"
 #include "test_tuple_utility.hpp"
 
@@ -28,6 +29,7 @@ static const std::vector<std::function<void()>> tests = {
     Test::test_eprint,
     Test::test_tuple_utility,
     Test::fib_seq_test,
+    Test::test_maybe,
 };
 
 static void IKU_IKU_IKU_AH() {
@@ -45,7 +47,6 @@ void run_all_tests() {
   for (const auto &test : tests) {
     test();
   }
-  IKU_IKU_IKU_AH();
 }
 
 }  // namespace Test
