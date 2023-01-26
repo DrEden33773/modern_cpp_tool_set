@@ -21,8 +21,6 @@
 
 #pragma once
 
-#include "tuple_utility.hpp"
-
 #include <functional>
 #include <iostream>
 #include <optional>
@@ -30,6 +28,8 @@
 #include <stdexcept>
 #include <tuple>
 #include <utility>
+
+#include "tuple_utility.hpp"
 
 namespace Eden {
 
@@ -96,4 +96,4 @@ void init(const std::tuple<> &tuple) {
   throw std::logic_error(error_info);
 }
 
-} // namespace Eden
+}  // namespace Eden

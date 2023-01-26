@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "tuple_as_list.hpp"
-#include "tuple_utility.hpp"
-
 #include <any>
 #include <stdexcept>
 #include <utility>
 #include <vector>
+
+#include "tuple_as_list.hpp"
+#include "tuple_utility.hpp"
 
 namespace Eden {
 
@@ -50,4 +50,4 @@ constexpr auto get_tuple_value(const std::tuple<Args...> &args_tuple) {
   return std::get<idx>(args_tuple);
 }
 
-} // namespace Eden
+}  // namespace Eden

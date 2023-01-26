@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "../AdvancedTuple.hpp"
-#include "../Eprint.hpp"
-
 #include <exception>
 #include <iostream>
 #include <tuple>
 #include <utility>
+
+#include "../AdvancedTuple.hpp"
+#include "../Eprint.hpp"
 
 namespace Test {
 
@@ -60,4 +60,4 @@ void test_tuple_utility() {
   std::cout << "\n";
 }
 
-} // namespace Test
+}  // namespace Test

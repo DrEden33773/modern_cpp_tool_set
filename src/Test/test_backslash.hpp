@@ -11,8 +11,9 @@
 
 #pragma once
 
-#include "../Print.hpp"
 #include <string_view>
+
+#include "../Print.hpp"
 
 namespace Test {
 
@@ -21,17 +22,17 @@ void test_backslash() {
   using Eden::println;
   std::string_view src = "Hello, World!\\{}";
   std::string_view cmp = "Hello, World!\{}";
-  println("src => {}", src); // Hello, World!\{}
-  println("cmp => {}", cmp); // Hello, World!{}
+  println("src => {}", src);  // Hello, World!\{}
+  println("cmp => {}", cmp);  // Hello, World!{}
   for (auto &&ch : src) {
-    print("{} ", ch); // H e l l o ,  W o r l d ! { }
+    print("{} ", ch);  // H e l l o ,  W o r l d ! { }
   }
   println();
   for (auto &&ch : cmp) {
-    print("{} ", ch); // H e l l o ,  W o r l d ! \ { }
+    print("{} ", ch);  // H e l l o ,  W o r l d ! \ { }
   }
   println();
   println();
 }
 
-} // namespace Test
+}  // namespace Test

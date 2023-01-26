@@ -21,7 +21,7 @@
 namespace Eden {
 
 class ThreadPool {
-private:
+ private:
   void init_threads(std::size_t numThreads) {
     for (std::size_t i = 0; i < numThreads; ++i) [[likely]] {
       threads.emplace_back([&]() {
@@ -56,7 +56,7 @@ private:
     }
   }
 
-public:
+ public:
   /// @brief Construct a new Thread Pool object (with a given number of threads)
   explicit ThreadPool(std::size_t numThreads) {
     if (numThreads > std::thread::hardware_concurrency()) [[unlikely]] {
@@ -71,7 +71,8 @@ public:
   /// @brief Construct a new Thread Pool object (with `hardware_concurrency()`)
   ThreadPool() { init_threads(std::thread::hardware_concurrency()); }
 
-  template <typename T> auto enqueue(T task) -> std::future<decltype(task())> {
+  template <typename T>
+  auto enqueue(T task) -> std::future<decltype(task())> {
     // A future object is a handle to a value that is not yet available.
     // It is a way to access the result of an asynchronous operation.
 
@@ -101,7 +102,7 @@ public:
       std::unique_lock<std::mutex> lock(queueMutex);
       stop = true;
     }
-    condition.notify_all(); // notify all threads to stop
+    condition.notify_all();  // notify all threads to stop
     // wait for all threads to stop
     for (auto &thread : threads) [[likely]] {
       thread.join();
@@ -163,7 +164,7 @@ public:
   ThreadPool(ThreadPool &&moved) = delete;
   ThreadPool &operator=(ThreadPool &&moved) = delete;
 
-private:
+ private:
   /// @brief a thread pool
   std::vector<std::thread> threads;
 
@@ -180,4 +181,4 @@ private:
   bool stop = false;
 };
 
-} // namespace Eden
+}  // namespace Eden

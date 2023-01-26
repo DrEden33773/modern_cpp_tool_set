@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include "../AdvancedPair.hpp"
-#include "../AdvancedTuple.hpp"
-#include "../Print.hpp"
-
 #include <iostream>
 #include <tuple>
 #include <utility>
+
+#include "../AdvancedPair.hpp"
+#include "../AdvancedTuple.hpp"
+#include "../Print.hpp"
 
 namespace Test {
 
@@ -73,16 +73,18 @@ void test_print() {
   println("Whether `std::tuple<int, double>` is `printable` => {}",
           Eden::printable<std::tuple<int, double>>);
 
-  println("Whether `std::tuple<int, std::tuple<double, int, float>>` is "
-          "`printable` => {}",
-          Eden::printable<std::tuple<int, std::tuple<double, int, float>>>);
+  println(
+      "Whether `std::tuple<int, std::tuple<double, int, float>>` is "
+      "`printable` => {}",
+      Eden::printable<std::tuple<int, std::tuple<double, int, float>>>);
 
   println("Whether `Struct Point` is `printable` => {}",
           Eden::printable<Point>);
 
-  println("Whether `std::tuple<std::tuple<double, int, float>, Point>` is "
-          "`printable` => {}",
-          Eden::printable<std::tuple<std::tuple<double, int, float>, Point>>);
+  println(
+      "Whether `std::tuple<std::tuple<double, int, float>, Point>` is "
+      "`printable` => {}",
+      Eden::printable<std::tuple<std::tuple<double, int, float>, Point>>);
   println();
 
   println("{{0}} = {0}, {{1}} = {1}", 1, 2);
@@ -93,4 +95,4 @@ void test_print() {
   println();
 }
 
-} // namespace Test
+}  // namespace Test

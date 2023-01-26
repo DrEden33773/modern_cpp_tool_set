@@ -9,9 +9,9 @@
  *
  */
 
-#include "Test/run_all_tests.hpp"
-
 #include <sstream>
+
+#include "Test/run_all_tests.hpp"
 
 inline void CXX_STANDARD_OUTPUT() {
   using Eden::println;

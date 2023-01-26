@@ -11,10 +11,11 @@
 
 #pragma once
 
+#include <functional>
+
 #include "../Format.hpp"
 #include "../Print.hpp"
 #include "../ThreadPool.hpp"
-#include <functional>
 
 namespace Test {
 
@@ -34,7 +35,7 @@ void fib_seq_test() {
         return a;
       }
       std::size_t idx{2};
-      while (true) [[likely]] {
+      while (true) {
         c = a + b;
         if (idx == end_idx) [[unlikely]] {
           break;
@@ -56,4 +57,4 @@ void fib_seq_test() {
   Eden::println("{}\n", res_str);
 }
 
-} // namespace Test
+}  // namespace Test

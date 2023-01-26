@@ -11,14 +11,14 @@
 
 #pragma once
 
+#include <functional>
+#include <vector>
+
 #include "fib_seq.hpp"
 #include "test_backslash.hpp"
 #include "test_eprint.hpp"
 #include "test_print.hpp"
 #include "test_tuple_utility.hpp"
-
-#include <functional>
-#include <vector>
 
 namespace Test {
 
@@ -48,4 +48,4 @@ void run_all_tests() {
   IKU_IKU_IKU_AH();
 }
 
-} // namespace Test
+}  // namespace Test

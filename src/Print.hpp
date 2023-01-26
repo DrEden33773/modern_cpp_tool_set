@@ -11,9 +11,6 @@
 
 #pragma once
 
-#include "Concepts.hpp"
-#include "Format.hpp"
-
 #include <algorithm>
 #include <concepts>
 #include <cstdio>
@@ -26,6 +23,9 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+#include "Concepts.hpp"
+#include "Format.hpp"
 
 // print("{}", 1);
 //   => 1
@@ -105,4 +105,4 @@ void println() { std::cout << "\n"; }
 
 #endif
 
-} // namespace Eden
+}  // namespace Eden

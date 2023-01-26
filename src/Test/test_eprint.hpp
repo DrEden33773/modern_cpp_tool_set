@@ -11,11 +11,11 @@
 
 #pragma once
 
-#include "../Eprint.hpp"
-#include "../Print.hpp"
-
 #include <exception>
 #include <vector>
+
+#include "../Eprint.hpp"
+#include "../Print.hpp"
 
 namespace Test {
 
@@ -29,4 +29,4 @@ void test_eprint() {
   Eden::println();
 }
 
-} // namespace Test
+}  // namespace Test

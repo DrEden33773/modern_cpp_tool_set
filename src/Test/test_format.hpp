@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include "../AdvancedPair.hpp"
-#include "../AdvancedTuple.hpp"
-#include "../Format.hpp"
-#include "../Print.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include "../AdvancedPair.hpp"
+#include "../AdvancedTuple.hpp"
+#include "../Format.hpp"
+#include "../Print.hpp"
 
 namespace Test {
 
@@ -52,4 +52,4 @@ void test_format() {
   println();
 }
 
-} // namespace Test
+}  // namespace Test

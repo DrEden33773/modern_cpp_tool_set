@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Concepts.hpp"
-
 #include <any>
 #include <functional>
 #include <iostream>
@@ -11,23 +9,25 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Concepts.hpp"
+
 namespace Eden {
 
 /// @brief @b unwrap_the_tuple
-template <class Func, class Tuple, size_t N> // N >= 2
+template <class Func, class Tuple, size_t N>  // N >= 2
 struct unwrap_tuple {
   constexpr static auto get_forward(const Tuple &tuple, Func f) {
     unwrap_tuple<Func, Tuple, N - 1>::get_forward(tuple, f);
     return f(std::get<N - 1>(tuple), N - 1);
   }
 };
-template <class Func, class Tuple> // N == 1
+template <class Func, class Tuple>  // N == 1
 struct unwrap_tuple<Func, Tuple, 1> {
   constexpr static auto get_forward(const Tuple &tuple, Func f) {
     return f(std::get<0>(tuple), 0);
   }
 };
-template <class Func, class Tuple> // N == 0
+template <class Func, class Tuple>  // N == 0
 struct unwrap_tuple<Func, Tuple, 0> {
   constexpr static auto get_forward(const Tuple &tuple, Func f) { return; }
 };
@@ -119,7 +119,7 @@ constexpr auto into_dyn_vec(const std::tuple<Args...> &tuple)
   return vec;
 }
 
-} // namespace Eden
+}  // namespace Eden
 
 /// @attention
 ///
@@ -191,4 +191,4 @@ constexpr std::string to_string(const std::tuple<Args...> &tuple) {
   return res;
 }
 
-} // namespace std
+}  // namespace std

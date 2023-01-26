@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include "Concepts.hpp"
-
 #include <concepts>
 #include <functional>
 #include <ios>
@@ -29,6 +27,8 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+
+#include "Concepts.hpp"
 
 namespace Eden {
 
@@ -99,7 +99,7 @@ template <oss_obj_operative... Args>
 std::string basic_format_helper(const std::string_view fmt,
                                 const std::vector<oss_obj_lambda> &args_vec) {
   std::ostringstream oss{};
-  oss.setf(std::ios_base::boolalpha); // open `boolalpha` option
+  oss.setf(std::ios_base::boolalpha);  // open `boolalpha` option
   std::size_t default_idx = 0;
   for (auto iter = fmt.begin(); iter != fmt.end(); ++iter) [[likely]] {
     // if could match `{{` as `{`
@@ -315,4 +315,4 @@ std::string format(const std::string_view fmt, Args &&...args) {
  */
 std::string format() { return ""; }
 
-} // namespace Eden
+}  // namespace Eden

@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "Format.hpp"
-
 #include <cstdio>
 #include <format>
+
+#include "Format.hpp"
 
 namespace Eden {
 
@@ -77,4 +77,4 @@ void eprintln(const std::string_view fmt, Args &&...args) {
 
 #endif
 
-} // namespace Eden
+}  // namespace Eden
