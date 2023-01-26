@@ -10,6 +10,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 #include <initializer_list>
 #include <string>
 #include <utility>
@@ -45,6 +46,7 @@ void test_maybe() {
                   [&sum](int num) mutable { sum += num; });
     return sum;
   };
+  auto int_to_string = [](int num) { return std::to_string(num); };
 
   static constexpr initializer_list<int> initializer = {15, 6,  1, 0,
                                                         32, 17, 24};
@@ -54,15 +56,26 @@ void test_maybe() {
                        .exec(for_each_add_one)
                        .exec(reverse)
                        .extract();
+  auto same_final_vec =
+      (Maybe<vector<int>>(initializer) | sort | for_each_add_one | reverse)
+          .extract();
 
-  auto final_sum = Maybe<vector<int>>(final_vec).exec(accumulate).extract();
+  assert(final_vec == same_final_vec);
+
+  auto str_sum = Maybe<vector<int>>(final_vec)
+                     .exec(accumulate)
+                     .exec(int_to_string)
+                     .extract();
+  auto same_str_sim =
+      (Maybe<vector<int>>(final_vec) | accumulate | int_to_string).extract();
+  assert(str_sum == same_str_sim);
 
   print("final_vec: ");
   for (auto num : final_vec) {
     print("{} ", num);
   }
   println();
-  println("sum of final_vec: {}", final_sum);
+  println("sum of final_vec: {}", str_sum);
   println();
 }
 

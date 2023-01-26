@@ -27,10 +27,10 @@ namespace Eden {
  * @tparam functor
  * @tparam value_t
  */
-template <typename functor, typename value_t>
-concept functor_of = requires(functor func, value_t value) {
-  { func(value) };
-  { !std::is_same_v<decltype(func(value)), void> };
+template <typename functor, typename... value_t>
+concept functor_of = requires(functor func) {
+  { func(value_t()...) };
+  { !std::is_same_v<decltype(func(value_t()...)), void> };
 };
 
 template <typename T>
@@ -44,34 +44,93 @@ class Maybe {
   explicit Maybe(const T &&init) : value{init} {}
   explicit Maybe(T &&init) : value{init} {}
 
-  static Maybe<T> from_optional(std::optional<T> &optional) {
-    Maybe<T> ret;
-    ret.value = optional;
-    return ret;
-  }
-  static Maybe<T> from_optional(const std::optional<T> &optional) {
-    Maybe<T> ret;
-    ret.value = optional;
-    return ret;
-  }
+  // static Maybe<T> from_optional(std::optional<T> &optional) {
+  //   Maybe<T> ret;
+  //   ret.value = optional;
+  //   return ret;
+  // }
+  // static Maybe<T> from_optional(const std::optional<T> &optional) {
+  //   Maybe<T> ret;
+  //   ret.value = optional;
+  //   return ret;
+  // }
+
+  static Maybe<T> null_maybe() { return Maybe<T>(); }
 
   T extract() {
     if (value == std::nullopt) {
       throw std::runtime_error("Cannot extract the value.");
     }
-    return value.value();
+    return std::move(value).value();
   }
 
-  std::optional<T> get_optional() { return value; }
+  std::optional<T> get_raw() { return value; }
 
-  auto exec(functor_of<T> auto func)
+  auto exec(functor_of<T> auto &&func)
       -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
     using type = decltype(func(T()));
     if (value == std::nullopt) {
-      return Maybe<type>::from_optional(std::optional<type>{std::nullopt});
+      return Maybe<type>::null_maybe();
+    }
+    return Maybe<type>(func(std::move(value).value()));
+  }
+
+  friend auto operator|(Maybe<T> &&maybe, functor_of<T> auto &&func)
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
+    auto &&value = std::move(maybe).get_raw();
+    if (value == std::nullopt) {
+      return Maybe<type>::null_maybe();
+    }
+    return Maybe<type>(func(value.value()));
+  }
+  friend auto operator|(Maybe<T> &maybe, functor_of<T> auto &&func)
+      -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+    using type = decltype(func(T()));
+    auto &&value = std::move(maybe).get_raw();
+    if (value == std::nullopt) {
+      return Maybe<type>::null_maybe();
     }
     return Maybe<type>(func(value.value()));
   }
 };
+
+template <typename T>
+auto maybe_exec(Maybe<T> &&maybe, functor_of<T> auto &&func)
+    -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+  using type = decltype(func(T()));
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    return Maybe<type>::null_maybe();
+  }
+  return Maybe<type>(func(value.value()));
+}
+template <typename T>
+auto maybe_exec(Maybe<T> &maybe, functor_of<T> auto &&func)
+    -> decltype(Maybe<decltype(func(T()))>(func(T()))) {
+  using type = decltype(func(T()));
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    return Maybe<type>::null_maybe();
+  }
+  return Maybe<type>(func(value.value()));
+}
+
+template <typename T>
+T maybe_extract(Maybe<T> &&maybe) {
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    throw std::runtime_error("Cannot extract the value.");
+  }
+  return value.value();
+}
+template <typename T>
+T maybe_extract(Maybe<T> &maybe) {
+  auto &&value = std::move(maybe).get_raw();
+  if (value == std::nullopt) {
+    throw std::runtime_error("Cannot extract the value.");
+  }
+  return value.value();
+}
 
 }  // namespace Eden

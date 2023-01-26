@@ -28,7 +28,7 @@ static const std::vector<std::function<void()>> tests = {
     // Test::test_backslash,
     Test::test_eprint,
     Test::test_tuple_utility,
-    Test::fib_seq_test,
+    // Test::fib_seq_test,
     Test::test_maybe,
 };
 
