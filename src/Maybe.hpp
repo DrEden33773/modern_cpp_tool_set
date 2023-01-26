@@ -71,7 +71,7 @@ class Maybe {
     if (value == std::nullopt) {
       return Maybe<type>::from_optional(std::optional<type>{std::nullopt});
     }
-    return Maybe<type>(func(this->value.value()));
+    return Maybe<type>(func(value.value()));
   }
 };
 
