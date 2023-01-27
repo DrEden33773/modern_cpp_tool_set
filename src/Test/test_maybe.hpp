@@ -21,6 +21,13 @@
 
 namespace Test {
 
+int func_accumulate(std::vector<int> vec) {
+  int sum = 0;
+  std::for_each(vec.begin(), vec.end(),
+                [&sum](int num) mutable { sum += num; });
+  return sum;
+}
+
 void test_maybe() {
   using Eden::Maybe;
   using Eden::print;
@@ -60,15 +67,16 @@ void test_maybe() {
       (Maybe<vector<int>>(initializer) | sort | for_each_add_one | reverse)
           .extract();
 
-  assert(final_vec == same_final_vec);
-
   auto str_sum = Maybe<vector<int>>(final_vec)
                      .exec(accumulate)
                      .exec(int_to_string)
                      .extract();
-  auto same_str_sim =
-      (Maybe<vector<int>>(final_vec) | accumulate | int_to_string).extract();
-  assert(str_sum == same_str_sim);
+  auto same_str_sum =
+      (Maybe<vector<int>>(final_vec) | func_accumulate | int_to_string)
+          .extract();
+
+  assert(final_vec == same_final_vec);
+  assert(str_sum == same_str_sum);
 
   print("final_vec: ");
   for (auto num : final_vec) {
