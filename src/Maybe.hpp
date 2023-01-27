@@ -73,13 +73,6 @@ class Maybe {
     }
     return Maybe<type>(func(std::move(value).value()));
   }
-  auto exec(const functor_of<T> auto &&func) -> Maybe<decltype(func(T()))> {
-    using type = decltype(func(T()));
-    if (value == std::nullopt) {
-      return Maybe<type>::null();
-    }
-    return Maybe<type>(func(std::move(value).value()));
-  }
 
   friend auto operator|(Maybe<T> &&maybe, functor_of<T> auto &&func)
       -> Maybe<decltype(func(T()))> {

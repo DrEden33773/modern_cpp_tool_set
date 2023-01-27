@@ -40,6 +40,8 @@ namespace Test {
 //   => {0} = 1, {1} = 2
 // ----------------------------OK
 
+// continuos
+
 struct Point {
   double x{};
   double y{};
@@ -91,8 +93,8 @@ void test_print() {
   println(R"("{{0}}" = {}, "{{1}}" = {})", 1, 2);
   println();
 
-  println("`test_Print()` passed!");
-  println();
+  // println("`test_Print()` passed!");
+  // println();
 }
 
 }  // namespace Test
