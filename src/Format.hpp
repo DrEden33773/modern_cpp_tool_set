@@ -21,6 +21,12 @@
 
 #endif
 
+#if _MSVC_STL_VERSION >= 143
+
+#include <format>
+
+#endif
+
 #if __cpp_lib_format
 
 template <std::size_t LEN>
@@ -31,6 +37,9 @@ struct string_template {
     std::ranges::copy(in, str);
   };
 };
+
+#include <functional>
+using func_type = std::function<auto(int)->int>;
 
 template <string_template fmt_str>
 constexpr auto operator""_format() {
