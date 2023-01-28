@@ -26,7 +26,8 @@
 template <std::size_t LEN>
 struct string_template {
   char str[LEN]{};
-  constexpr string_template(const char (&in)[LEN]) {
+  using string_type = char[LEN];
+  constexpr string_template(const string_type& in) {
     std::ranges::copy(in, str);
   };
 };
