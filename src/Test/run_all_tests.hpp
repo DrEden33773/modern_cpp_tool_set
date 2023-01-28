@@ -34,11 +34,11 @@ static const std::vector<std::function<void()>> tests = {
 
 static void IKU_IKU_IKU_AH() {
   struct EN_EN_EN_AH {
-    static std::string operator()() { return "1145141919810"; }
+    std::string operator()() { return "1145141919810"; }
   };
   Eden::println("{}\n", [&]() {
     std::ostringstream oss;
-    oss << EN_EN_EN_AH::operator()();
+    oss << EN_EN_EN_AH{}.operator()();
     return oss.str();
   }());
 }
