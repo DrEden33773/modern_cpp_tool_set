@@ -17,6 +17,61 @@
 
 #pragma once
 
+#include <utility>
+
+#if _GLIBCXX_RELEASE >= 13
+
+// <format> exists <=> the version of `gcc's libstdc++` is higher than 13
+// (aka. _GLIBCXX_RELEASE >= 13)
+#include <format>
+
+#endif
+
+#if __cpp_lib_format
+
+inline namespace literals {
+
+template <std::size_t LEN>
+struct string_template {
+  char str[LEN]{};
+  constexpr string_template(const char (&in)[LEN]) {
+    std::ranges::copy(in, str);
+  };
+};
+
+template <string_template fmt_str>
+constexpr auto operator""_format() {
+  return [=]<typename... Args>(Args&&... args) {
+    return std::format(fmt_str.str, std::forward<Args>(args)...);
+  };
+}
+template <string_template fmt_str>
+constexpr auto operator""_fmt() {
+  return [=]<typename... Args>(Args&&... args) {
+    return std::format(fmt_str.str, std::forward<Args>(args)...);
+  };
+}
+template <string_template fmt_str>
+constexpr auto operator""_f() {
+  return [=]<typename... Args>(Args&&... args) {
+    return std::format(fmt_str.str, std::forward<Args>(args)...);
+  };
+}
+
+}  // namespace literals
+
+namespace Eden {
+
+template <typename... Args>
+constexpr std::string format(const char* fmt_str, Args&&... args) {
+  auto fmt_args{std::make_format_args(std::forward<Args>(args)...)};
+  return std::vformat(fmt_str, fmt_args);
+}
+
+}  // namespace Eden
+
+#else
+
 #include <concepts>
 #include <functional>
 #include <ios>
@@ -25,7 +80,6 @@
 #include <string_view>
 #include <type_traits>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 #include "Concepts.hpp"
@@ -316,3 +370,5 @@ std::string format(const std::string_view fmt, Args &&...args) {
 std::string format() { return ""; }
 
 }  // namespace Eden
+
+#endif

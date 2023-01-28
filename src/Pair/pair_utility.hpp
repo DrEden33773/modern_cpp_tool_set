@@ -11,14 +11,14 @@
 
 #pragma once
 
-#include "../Concepts.hpp"
-
 #include <functional>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
+
+#include "../Concepts.hpp"
 
 namespace std {
 
@@ -70,7 +70,15 @@ std::string to_string(const std::pair<T, U> &pair) {
   return res;
 }
 
-} // namespace std
+}  // namespace std
+
+#if _GLIBCXX_RELEASE >= 13
+
+#include <format>
+
+namespace std {}  // namespace std
+
+#endif
 
 namespace Eden {
 
@@ -87,4 +95,4 @@ auto pair_to_tuple(const std::pair<T, U> &p) -> std::tuple<T, U> {
   return std::make_tuple(p.first, p.second);
 }
 
-} // namespace Eden
+}  // namespace Eden

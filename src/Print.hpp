@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <concepts>
 #include <cstdio>
-#include <format>
 #include <functional>
 #include <iostream>
 #include <list>

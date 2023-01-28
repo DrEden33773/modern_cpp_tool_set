@@ -12,7 +12,6 @@
 #pragma once
 
 #include <cstdio>
-#include <format>
 
 #include "Format.hpp"
 
