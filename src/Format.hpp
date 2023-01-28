@@ -23,8 +23,6 @@
 
 #if __cpp_lib_format
 
-inline namespace literals {
-
 template <std::size_t LEN>
 struct string_template {
   char str[LEN]{};
@@ -51,8 +49,6 @@ constexpr auto operator""_f() {
     return std::format(fmt_str.str, std::forward<Args>(args)...);
   };
 }
-
-}  // namespace literals
 
 namespace Eden {
 
