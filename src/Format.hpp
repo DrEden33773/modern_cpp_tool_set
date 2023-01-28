@@ -9,12 +9,6 @@
  *
  */
 
-/**
- * @attention This file is @b DISCARDED due to `std_format_library` was found
- *
- *
- */
-
 #pragma once
 
 #include <utility>
