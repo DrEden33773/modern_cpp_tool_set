@@ -16,7 +16,7 @@
 #if _GLIBCXX_RELEASE >= 13
 
 // <format> exists <=> the version of `gcc's libstdc++` is higher than 13
-// (aka. _GLIBCXX_RELEASE >= 13)
+// (aka, _GLIBCXX_RELEASE >= 13)
 #include <format>
 
 #endif
@@ -34,12 +34,10 @@ struct string_template {
   char str[LEN]{};
   using string_type = char[LEN];
   constexpr string_template(const string_type& in) {
+    /* const string_type& <=> const char (&)[LEN] */
     std::ranges::copy(in, str);
   };
 };
-
-#include <functional>
-using func_type = std::function<auto(int)->int>;
 
 template <string_template fmt_str>
 constexpr auto operator""_format() {
