@@ -37,6 +37,10 @@
 // print("{0}, {}, {1}, {}", 1, 2);
 //   => 1, 1, 2, 2
 
+#ifndef __eden_lib_print
+#define __eden_lib_print 114514
+#endif
+
 namespace Eden {
 
 #if __cpp_lib_format

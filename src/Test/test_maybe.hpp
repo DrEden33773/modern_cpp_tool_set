@@ -30,8 +30,10 @@ int func_accumulate(std::vector<int> vec) {
 
 void test_maybe() {
   using Eden::Maybe;
+#ifdef __eden_lib_print
   using Eden::print;
   using Eden::println;
+#endif
   using std::initializer_list;
   using std::vector;
 
@@ -78,6 +80,7 @@ void test_maybe() {
   assert(final_vec == same_final_vec);
   assert(str_sum == same_str_sum);
 
+#ifdef __eden_lib_print
   print("final_vec: ");
   for (auto num : final_vec) {
     print("{} ", num);
@@ -85,6 +88,15 @@ void test_maybe() {
   println();
   println("sum of final_vec: {}", str_sum);
   println();
+#else
+  std::cout << "final_vec: ";
+  for (auto num : final_vec) {
+    std::cout << num << " ";
+  }
+  std::cout << "\n";
+  std::cout << "sum of final_vec: " << str_sum;
+  std::cout << "\n";
+#endif
 }
 
 }  // namespace Test

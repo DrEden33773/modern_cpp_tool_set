@@ -4,7 +4,8 @@ target("modern_cpp_tool_set")
     set_kind("binary")
     add_files("src/*.cpp")
     set_languages("c17", "c++23")
-
+    add_cxflags("-fuse-ld=lld")
+    set_policy("check.auto_ignore_flags", false)
 
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
