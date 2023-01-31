@@ -33,6 +33,8 @@ concept functor_of = requires(functor func) {
   { !std::is_same_v<decltype(func(value_t()...)), void> };
 };
 
+struct EOF_Maybe {};
+
 template <typename T>
 class Maybe {
   std::optional<T> value{};
@@ -41,8 +43,8 @@ class Maybe {
  public:
   explicit Maybe(T &init) : value{init} {}
   explicit Maybe(const T &init) : value{init} {}
-  explicit Maybe(const T &&init) : value{init} {}
-  explicit Maybe(T &&init) : value{init} {}
+  explicit Maybe(const T &&init) : value{std::move(init)} {}
+  explicit Maybe(T &&init) : value{std::move(init)} {}
 
   static Maybe<T> from_optional(std::optional<T> &optional) {
     Maybe<T> ret;
@@ -91,6 +93,21 @@ class Maybe {
       return Maybe<type>::null();
     }
     return Maybe<type>(func(value.value()));
+  }
+
+  friend auto operator|(Maybe<T> &&maybe, const EOF_Maybe &) {
+    auto &&value = std::move(maybe).raw();
+    if (value == std::nullopt) {
+      throw std::runtime_error("Cannot extract the value.");
+    }
+    return value.value();
+  }
+  friend auto operator|(Maybe<T> &maybe, const EOF_Maybe &) {
+    auto &&value = std::move(maybe).raw();
+    if (value == std::nullopt) {
+      throw std::runtime_error("Cannot extract the value.");
+    }
+    return value.value();
   }
 };
 

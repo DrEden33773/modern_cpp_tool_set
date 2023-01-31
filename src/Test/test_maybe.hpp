@@ -65,17 +65,15 @@ void test_maybe() {
                        .exec(for_each_add_one)
                        .exec(reverse)
                        .extract();
-  auto same_final_vec =
-      (Maybe<vector<int>>(initializer) | sort | for_each_add_one | reverse)
-          .extract();
+  auto same_final_vec = Maybe<vector<int>>(initializer) | sort |
+                        for_each_add_one | reverse | Eden::EOF_Maybe{};
 
   auto str_sum = Maybe<vector<int>>(final_vec)
                      .exec(accumulate)
                      .exec(int_to_string)
                      .extract();
-  auto same_str_sum =
-      (Maybe<vector<int>>(final_vec) | func_accumulate | int_to_string)
-          .extract();
+  auto same_str_sum = Maybe<vector<int>>(final_vec) | func_accumulate |
+                      int_to_string | Eden::EOF_Maybe{};
 
   assert(final_vec == same_final_vec);
   assert(str_sum == same_str_sum);
