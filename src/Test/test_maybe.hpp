@@ -21,7 +21,7 @@
 
 namespace Test {
 
-int func_accumulate(std::vector<int> vec) {
+int _accumulate(std::vector<int> vec) {
   int sum = 0;
   std::for_each(vec.begin(), vec.end(),
                 [&sum](int num) mutable { sum += num; });
@@ -30,10 +30,6 @@ int func_accumulate(std::vector<int> vec) {
 
 void test_maybe() {
   using Eden::Maybe;
-#ifdef __eden_lib_print
-  using Eden::print;
-  using Eden::println;
-#endif
   using std::initializer_list;
   using std::vector;
 
@@ -49,42 +45,44 @@ void test_maybe() {
     std::reverse(vec.begin(), vec.end());
     return vec;
   };
-  const auto accumulate = [](vector<int> vec) {
+  auto accumulate = [](vector<int> vec) {
     int sum = 0;
     std::for_each(vec.begin(), vec.end(),
                   [&sum](int num) mutable { sum += num; });
     return sum;
   };
-  const auto int_to_string = [](int num) { return std::to_string(num); };
 
-  static constexpr initializer_list<int> initializer = {15, 6,  1, 0,
-                                                        32, 17, 24};
+  static const vector<int> vec{15, 6, 1, 0, 32, 17, 24};
 
-  auto final_vec = Maybe<vector<int>>(initializer)
+  auto final_vec = Maybe(vec)
                        .exec(sort)
                        .exec(for_each_add_one)
                        .exec(reverse)
+                       .exec(for_each_add_one)
                        .extract();
-  auto same_final_vec = Maybe<vector<int>>(initializer) | sort |
-                        for_each_add_one | reverse | Eden::EOF_Maybe{};
+  auto same_final_vec = Maybe(vec) | sort | for_each_add_one | reverse |
+                        for_each_add_one | Eden::extract;
 
-  auto str_sum = Maybe<vector<int>>(final_vec)
-                     .exec(accumulate)
-                     .exec(int_to_string)
-                     .extract();
-  auto same_str_sum = Maybe<vector<int>>(final_vec) | func_accumulate |
-                      int_to_string | Eden::EOF_Maybe{};
+  auto sum = Maybe(final_vec).exec(accumulate).extract();
+  auto same_sum = Maybe(final_vec) | accumulate | Eden::extract;
+
+  auto temp_maybe = Maybe(final_vec);
+  auto a_copied_sum = temp_maybe | _accumulate | Eden::extract;
+  auto b_copied_sum = temp_maybe | _accumulate | Eden::extract;
 
   assert(final_vec == same_final_vec);
-  assert(str_sum == same_str_sum);
+  assert(sum == same_sum);
+  assert(a_copied_sum == b_copied_sum);
 
 #ifdef __eden_lib_print
+  using Eden::print;
+  using Eden::println;
   print("final_vec: ");
   for (auto num : final_vec) {
     print("{} ", num);
   }
   println();
-  println("sum of final_vec: {}", str_sum);
+  println("sum of final_vec: {}", a_copied_sum);
   println();
 #else
   std::cout << "final_vec: ";

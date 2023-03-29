@@ -35,6 +35,8 @@ concept functor_of = requires(functor func) {
 
 struct EOF_Maybe {};
 
+static constexpr auto extract = EOF_Maybe{};
+
 template <typename T>
 class Maybe {
   std::optional<T> value{};
@@ -46,9 +48,9 @@ class Maybe {
   explicit Maybe(const T &&init) : value{std::move(init)} {}
   explicit Maybe(T &&init) : value{std::move(init)} {}
 
-  static Maybe<T> from_optional(std::optional<T> &optional) {
+  static Maybe<T> from_optional(std::optional<T> &&optional) {
     Maybe<T> ret;
-    ret.value = optional;
+    ret.value = std::move(optional);
     return ret;
   }
   static Maybe<T> from_optional(const std::optional<T> &optional) {
@@ -88,7 +90,7 @@ class Maybe {
   friend auto operator|(Maybe<T> &maybe, functor_of<T> auto &&func)
       -> Maybe<decltype(func(T()))> {
     using type = decltype(func(T()));
-    auto &&value = std::move(maybe).raw();
+    auto value = maybe.raw();
     if (value == std::nullopt) {
       return Maybe<type>::null();
     }
@@ -103,7 +105,7 @@ class Maybe {
     return value.value();
   }
   friend auto operator|(Maybe<T> &maybe, const EOF_Maybe &) {
-    auto &&value = std::move(maybe).raw();
+    auto value = maybe.raw();
     if (value == std::nullopt) {
       throw std::runtime_error("Cannot extract the value.");
     }
@@ -125,7 +127,7 @@ template <typename T>
 auto exec_maybe(Maybe<T> &maybe, functor_of<T> auto &&func)
     -> Maybe<decltype(func(T()))> {
   using type = decltype(func(T()));
-  auto &&value = std::move(maybe).raw();
+  auto value = maybe.raw();
   if (value == std::nullopt) {
     return Maybe<type>::null();
   }
@@ -142,7 +144,7 @@ T extract_maybe(Maybe<T> &&maybe) {
 }
 template <typename T>
 T extract_maybe(Maybe<T> &maybe) {
-  auto &&value = std::move(maybe).raw();
+  auto value = maybe.raw();
   if (value == std::nullopt) {
     throw std::runtime_error("Cannot extract the value.");
   }
